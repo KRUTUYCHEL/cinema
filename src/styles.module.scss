@@ -1,0 +1,18 @@
+$font-stack: 'Roboto', sans-serif;
+
+$black: #000000;
+$white: #FFFFFF;
+$green: #16A6AF;
+
+
+html {
+  font-family: $font-stack;
+  font-size: 62.5%;
+}
+
+body {
+  background-image: url('../public/i/background.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: right;
+}
