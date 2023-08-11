@@ -1,11 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from "react-router-dom";
+import { setDefaultOptions } from 'date-fns';
+import ruLocale from 'date-fns/locale/ru';
 import App from './components/App';
 import reportWebVitals from './reportWebVitals';
 
 import 'normalize.css';
 import './styles.module.scss';
+
+setDefaultOptions({
+  locale: ruLocale
+});
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
