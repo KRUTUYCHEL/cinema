@@ -1,14 +1,25 @@
 import React from "react";
 
+export interface Seance {
+  id: string;
+  startTime: string;
+}
 
-interface FilmProps {
+export interface Hall {
+  id: string;
+  name: string;
+  seances: Seance[];
+}
 
+export interface FilmProps {
   id: string;
   name: string;
   duration: string;
   description: string;
   origin: string;
   poster: string;
+
+  data: Hall[];
 }
 
 const Film = ({ id, name, duration , description , origin, poster}: FilmProps) => {

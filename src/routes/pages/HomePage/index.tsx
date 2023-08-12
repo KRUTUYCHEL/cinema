@@ -1,6 +1,6 @@
 import React from 'react';
 import NavDateSelector from '../../../components/NavDateSelector';
-import Film from '../../../components/Film';
+import Film, {Hall, Seance} from '../../../components/Film';
 
 const HomePage = () => {
   return (
@@ -8,17 +8,31 @@ const HomePage = () => {
 
       <NavDateSelector />
       <main>
-        {data.films.result.map(p => (
-          <Film
-            key={p.film_id}
-            id={p.film_id}
-            name={p.film_name}
-            duration={p.film_duration}
-            description={p.film_description}
-            origin={p.film_origin}
-            poster={p.film_poster}
-          />
-        ))}
+        {data.films.result.map(p => {
+          const filmSeances = data.seances.result.filter((r) => r.seance_filmid === p.film_id);
+          const halls = data.halls.result.filter((h) => filmSeances.some( x => h.hall_id === x.seance_hallid))
+          const data1: Hall[] = halls.map((h)=> ({
+            id: h.hall_id,
+            name: h.hall_name,
+            seances: filmSeances.filter(s => s.seance_hallid === h.hall_id).map(i => ({
+              id: i.seance_id,
+              startTime: i.seance_time,
+
+            }))
+          }));
+          return (
+            <Film
+              key={p.film_id}
+              id={p.film_id}
+              name={p.film_name}
+              duration={p.film_duration}
+              description={p.film_description}
+              origin={p.film_origin}
+              poster={p.film_poster}
+              data={data1}
+            />
+          );
+        })}
       </main>
     </>
   )
