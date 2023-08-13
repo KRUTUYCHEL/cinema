@@ -1,10 +1,12 @@
 import React, {useEffect, useState} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import sendRequest from "../../../utils/sendRequest";
-import HallPlaces from "../../../components/HallPlaces";
+import HallPlaces, {Selected} from "../../../components/HallPlaces";
 
 const HallPage = () => {
   let { search } = useLocation();
+
+  const [selectedPlaces, setSelectedPlaces] = useState<Selected[]>([]);
 
   const query = new URLSearchParams(search);
   const tm = query.get('timestamp');
@@ -20,7 +22,7 @@ const HallPage = () => {
   const [data, setData] = useState<any>(null);
   const [film, setFilm] = useState<any>(null);
   const [hall, setHall] = useState<any>(null);
-  const [seance, setSeance] = useState<any>(null)
+  const [seance, setSeance] = useState<any>(null);
   const loadData = async () => {
     setLoading(true);
     try {
@@ -69,9 +71,10 @@ const HallPage = () => {
             <div className="conf-step__wrapper">
               {data && (
                 <HallPlaces
-                  value={[]}
-                  onChange={() => {}}
-                  onUpdateHtml={html => setData(html)}
+                  value={selectedPlaces}
+                  onUpdate={(value, html) => {
+                    setSelectedPlaces(value);
+                  }}
                   html={data}
                 />
               )}
