@@ -2,9 +2,9 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 
 import HomePage from './pages/HomePage';
-import HallPage from './pages/EmptyPage';
-import PaymentPage from './pages/EmptyPage';
-import TicketPage from './pages/EmptyPage';
+import HallPage from './pages/HallPage';
+import PaymentPage from './pages/PaymentPage';
+import TicketPage from './pages/TicketPage';
 
 
 const PageRoutes = () => {

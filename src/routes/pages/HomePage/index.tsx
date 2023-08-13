@@ -1,209 +1,101 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import NavDateSelector from '../../../components/NavDateSelector';
 import Film, {Hall, Seance} from '../../../components/Film';
+import sendRequest from "../../../utils/sendRequest";
+import {useNavigate} from "react-router-dom";
+
+
 
 const HomePage = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<any>(null);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      // implement here...
+      const serverData = await sendRequest('POST', 'https://jscp-diplom.netoserver.ru/', 'event=update');
+
+      setData(serverData);
+    }
+    catch (e) {
+      console.error(e);
+    }
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  let content: any = null;
+
+  if (loading) {
+    content = (
+      <div>
+        Loading...
+      </div>
+    )
+  } else if (!!data) {
+    content = data.films.result.map((p: any) => {
+      const filmSeances = data.seances.result.filter((r: any) => r.seance_filmid === p.film_id);
+      const halls = data.halls.result.filter((h: any) => filmSeances.some((x: any) => h.hall_id === x.seance_hallid))
+      const data1: Hall[] = halls.map((h: any)=> ({
+        id: h.hall_id,
+        name: h.hall_name,
+        seances: filmSeances.filter((s: any) => s.seance_hallid === h.hall_id).map((i: any) => ({
+          id: i.seance_id,
+          startTime: i.seance_time,
+
+        }))
+      }));
+      return (
+        <Film
+          key={p.film_id}
+          id={p.film_id}
+          name={p.film_name}
+          duration={p.film_duration}
+          description={p.film_description}
+          origin={p.film_origin}
+          poster={p.film_poster}
+          data={data1}
+          onSeanceClick={(seanceId) => {
+            const seance = data.seances.result.find((p: any) => p.seance_id === seanceId);
+            const currentDate = new Date();
+            let selectedYear = currentDate.getFullYear();
+            let selectedMonth = currentDate.getMonth();
+            let selectedDay = currentDate.getDate();
+            const seanceStartHours = Math.trunc(
+              Number(seance.seance_start) / 60
+            );
+            const seanceStartMinutes =
+              Number(seance.seance_start) % 60;
+            const seanceStartDate = new Date(
+              selectedYear,
+              selectedMonth,
+              selectedDay,
+              seanceStartHours,
+              seanceStartMinutes
+            );
+            const tm = String(
+              seanceStartDate.getTime() / 1000
+            );
+
+            navigate(`/hall?timestamp=${tm}&hallId=${seance.seance_hallid}&seanceId=${seance.seance_id}`);
+          }}
+        />
+      );
+    })
+  }
+
   return (
     <>
-
       <NavDateSelector />
       <main>
-        {data.films.result.map(p => {
-          const filmSeances = data.seances.result.filter((r) => r.seance_filmid === p.film_id);
-          const halls = data.halls.result.filter((h) => filmSeances.some( x => h.hall_id === x.seance_hallid))
-          const data1: Hall[] = halls.map((h)=> ({
-            id: h.hall_id,
-            name: h.hall_name,
-            seances: filmSeances.filter(s => s.seance_hallid === h.hall_id).map(i => ({
-              id: i.seance_id,
-              startTime: i.seance_time,
-
-            }))
-          }));
-          return (
-            <Film
-              key={p.film_id}
-              id={p.film_id}
-              name={p.film_name}
-              duration={p.film_duration}
-              description={p.film_description}
-              origin={p.film_origin}
-              poster={p.film_poster}
-              data={data1}
-            />
-          );
-        })}
+        {content}
       </main>
     </>
   )
 }
 export default HomePage;
-
-const data = {
-  "halls": {
-    "result": [
-      {
-        "hall_id": "71",
-        "hall_name": "Зал1",
-        "hall_rows": "10",
-        "hall_places": "10",
-        "hall_price_standart": "100",
-        "hall_price_vip": "350",
-        "hall_open": "1"
-      },
-      {
-        "hall_id": "59",
-        "hall_name": "Зал2",
-        "hall_rows": "10",
-        "hall_places": "10",
-        "hall_price_standart": "100",
-        "hall_price_vip": "350",
-        "hall_open": "1"
-      },
-      {
-        "hall_id": "66",
-        "hall_name": "Зал3",
-        "hall_rows": "10",
-        "hall_places": "10",
-        "hall_price_standart": "100",
-        "hall_price_vip": "350",
-        "hall_open": "1"
-      },
-      {
-        "hall_id": "72",
-        "hall_name": "Зал4",
-        "hall_rows": "10",
-        "hall_places": "10",
-        "hall_price_standart": "100",
-        "hall_price_vip": "350",
-        "hall_open": "0"
-      }
-    ],
-    "err": 0,
-    "errMessage": ""
-  },
-  "films": {
-    "result": [
-      {
-        "film_id": "98",
-        "film_name": "Аватар: Путь воды (2022)",
-        "film_duration": "192",
-        "film_description": "После принятия образа аватара солдат Джейк Салли становится предводителем народа на-ви и берет на себя миссию по защите новых друзей от корыстных бизнесменов с Земли. Теперь ему есть за кого бороться — с Джейком его прекрасная возлюбленная Нейтири. Когда на Пандору возвращаются до зубов вооруженные земляне, Джейк готов дать им отпор.",
-        "film_origin": "США",
-        "film_poster": "https://jscp-diplom.netoserver.ru/jscp-diplom/img/posters/98.png"
-      },
-      {
-        "film_id": "101",
-        "film_name": "Вызов",
-        "film_duration": "164",
-        "film_description": "Торакальный хирург Женя за месяц должна подготовиться к космическому полету и отправиться на МКС, чтобы спасти космонавта. Удастся ли ей справиться с испытаниями? Сможет ли она преодолеть неуверенность и страхи? Получится ли у нее провести сложнейшую операцию в условиях невесомости, от которой зависят шансы космонавта вернуться на Землю живым?",
-        "film_origin": "Россия",
-        "film_poster": "https://jscp-diplom.netoserver.ru/jscp-diplom/img/posters/101.png"
-      },
-      {
-        "film_id": "99",
-        "film_name": "Джон Уик 4",
-        "film_duration": "169",
-        "film_description": "Джон Уик находит способ одержать победу над Правлением Кланов. Однако, прежде чем он сможет заслужить свою свободу, ему предстоит сразиться с новым врагом и его могущественными союзниками.",
-        "film_origin": "США",
-        "film_poster": "https://jscp-diplom.netoserver.ru/jscp-diplom/img/posters/99.png"
-      },
-      {
-        "film_id": "100",
-        "film_name": "Кот в сапогах 2: Последнее желание",
-        "film_duration": "102",
-        "film_description": "Промотав восемь жизней из девяти и до смерти испугавшись пришедшего за ним волка-охотника за головами, Кот в сапогах внимает совету врача и заселяется в дом местной кошатницы. Там он смиряется с установленными порядками, отращивает бороду и теряет тягу к подвигам и приключениям, но только до тех пор, пока не узнаёт о волшебной карте, которая указывает путь к где-то упавшей Звезде желаний. Кот в сапогах твёрдо решает отыскать Звезду, чтобы вернуть свои жизни, и в компании притворявшегося кошачьим пёсика отправляется красть карту у известного коллекционера волшебных предметов Джека Хорнера.\n\n",
-        "film_origin": "США, Япония",
-        "film_poster": "https://jscp-diplom.netoserver.ru/jscp-diplom/img/posters/100.png"
-      }
-    ],
-    "err": 0,
-    "errMessage": ""
-  },
-  "seances": {
-    "result": [
-      {
-        "seance_id": "71",
-        "seance_hallid": "72",
-        "seance_filmid": "100",
-        "seance_time": "09:00",
-        "seance_start": "540",
-        "seance_end": "642"
-      },
-      {
-        "seance_id": "65",
-        "seance_hallid": "59",
-        "seance_filmid": "99",
-        "seance_time": "10:00",
-        "seance_start": "600",
-        "seance_end": "769"
-      },
-      {
-        "seance_id": "67",
-        "seance_hallid": "66",
-        "seance_filmid": "101",
-        "seance_time": "10:00",
-        "seance_start": "600",
-        "seance_end": "764"
-      },
-      {
-        "seance_id": "62",
-        "seance_hallid": "71",
-        "seance_filmid": "98",
-        "seance_time": "10:10",
-        "seance_start": "610",
-        "seance_end": "802"
-      },
-      {
-        "seance_id": "69",
-        "seance_hallid": "66",
-        "seance_filmid": "99",
-        "seance_time": "12:50",
-        "seance_start": "770",
-        "seance_end": "939"
-      },
-      {
-        "seance_id": "63",
-        "seance_hallid": "71",
-        "seance_filmid": "99",
-        "seance_time": "14:20",
-        "seance_start": "860",
-        "seance_end": "1029"
-      },
-      {
-        "seance_id": "66",
-        "seance_hallid": "59",
-        "seance_filmid": "100",
-        "seance_time": "15:30",
-        "seance_start": "930",
-        "seance_end": "1032"
-      },
-      {
-        "seance_id": "70",
-        "seance_hallid": "66",
-        "seance_filmid": "98",
-        "seance_time": "16:00",
-        "seance_start": "960",
-        "seance_end": "1152"
-      },
-      {
-        "seance_id": "64",
-        "seance_hallid": "71",
-        "seance_filmid": "98",
-        "seance_time": "17:20",
-        "seance_start": "1040",
-        "seance_end": "1232"
-      },
-      {
-        "seance_id": "68",
-        "seance_hallid": "59",
-        "seance_filmid": "101",
-        "seance_time": "18:00",
-        "seance_start": "1080",
-        "seance_end": "1244"
-      }
-    ],
-    "err": 0,
-    "errMessage": ""
-  }
-};
