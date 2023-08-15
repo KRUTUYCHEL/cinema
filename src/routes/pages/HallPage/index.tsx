@@ -1,44 +1,41 @@
 import React, {useEffect, useState} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import sendRequest from "../../../utils/sendRequest";
-import HallPlaces, {Selected} from "../../../components/HallPlaces";
+import HallPlaces from "../../../components/HallPlaces";
+import orderStorage, {SelectedPlace} from '../../../data';
 
 const HallPage = () => {
   let { search } = useLocation();
-
-  const [selectedPlaces, setSelectedPlaces] = useState<Selected[]>([]);
-
   const query = new URLSearchParams(search);
-  const tm = query.get('timestamp');
-  const hallId = query.get('hallId');
-  const seanceId = query.get('seanceId');
-
-  console.log(query, tm, hallId, seanceId);
-
-  const params = `event=get_hallConfig&timestamp=${tm}&hallId=${hallId}&seanceId=${seanceId}`;
+  const orderId = query.get('orderId') as string;
 
   const navigate = useNavigate();
+
+  if (!orderId) {
+    navigate('/');
+
+    throw new Error('Order id is not defined');
+  }
+
+  const order = orderStorage.getOrder(orderId);
+
+  const [selectedPlaces, setSelectedPlaces] = useState<SelectedPlace[]>([]);
+  const [modifiedHallConfig, setModifiedHallConfig] = useState<string>('');
+
+  console.log(order);
+
+  const params = `event=get_hallConfig&timestamp=${order.timestamp}&hallId=${order.hall.hall_id}&seanceId=${order.seance.seance_id}`;
+
+
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>(null);
-  const [film, setFilm] = useState<any>(null);
-  const [hall, setHall] = useState<any>(null);
-  const [seance, setSeance] = useState<any>(null);
+
   const loadData = async () => {
     setLoading(true);
     try {
-      const fullServerData = await sendRequest('POST', 'https://jscp-diplom.netoserver.ru/', 'event=update') as any;
       const serverData = await sendRequest('POST', 'https://jscp-diplom.netoserver.ru/', params);
 
-      const seance = fullServerData.seances.result.find((p: any) => p.seance_id === seanceId);
-      const hall = fullServerData.halls.result.find((s: any) => s.hall_id === hallId);
-      const film = fullServerData.films.result.find((d: any) => d.film_id === seance.seance_filmid);
-
-      setSeance(seance);
-      setHall(hall);
-      setFilm(film)
-      setData(serverData || hall.hall_config);
-
-      console.log(fullServerData)
+      setData(serverData || order.hall.hall_config);
     }
     catch (e) {
       console.error(e);
@@ -50,6 +47,15 @@ const HallPage = () => {
     loadData();
   }, []);
 
+  const bookSeats = () => {
+    order.selected = selectedPlaces;
+    order.state = 'confirmation';
+    order.modified_hall_config = modifiedHallConfig;
+    orderStorage.saveOrder(order);
+
+    navigate(`/payment?orderId=${order.id}`);
+  }
+
   if (loading){
     return <div>LOADING.......</div>
   }
@@ -59,9 +65,9 @@ const HallPage = () => {
         <section className="buying">
           <div className="buying__info">
             <div className="buying__info-description">
-              <h2 className="buying__info-title">{film.film_name}</h2>
-              <p className="buying__info-start">Начало сеанса: {seance.seance_time}</p>
-              <p className="buying__info-hall">{hall.hall_name}</p>
+              <h2 className="buying__info-title">{order.film.film_name}</h2>
+              <p className="buying__info-start">Начало сеанса: {order.seance.seance_time}</p>
+              <p className="buying__info-hall">{order.hall.hall_name}</p>
             </div>
             <div className="buying__info-hint">
               <p>Тапните дважды,<br></br>чтобы увеличить</p>
@@ -72,8 +78,11 @@ const HallPage = () => {
               {data && (
                 <HallPlaces
                   value={selectedPlaces}
-                  onUpdate={(value, html) => {
+                  onUpdate={(value) => {
                     setSelectedPlaces(value);
+                  }}
+                  onUpdateHtml={html => {
+                    setModifiedHallConfig(html);
                   }}
                   html={data}
                 />
@@ -84,13 +93,13 @@ const HallPage = () => {
                 <p className="conf-step__legend-price">
                   <span className="conf-step__chair conf-step__chair_standart"></span> Свободно (
                   <span
-                  className="conf-step__legend-value price-standart">250
+                  className="conf-step__legend-value price-standart">{order.hall.hall_price_standart}
                   </span>руб)
                 </p>
                 <p className="conf-step__legend-price">
                   <span className="conf-step__chair conf-step__chair_vip">
                   </span> Свободно VIP (<span
-                  className="conf-step__legend-value price-vip">350</span>руб)</p>
+                  className="conf-step__legend-value price-vip">{order.hall.hall_price_vip}</span>руб)</p>
               </div>
               <div className="col">
                 <p className="conf-step__legend-price">
@@ -102,7 +111,12 @@ const HallPage = () => {
               </div>
             </div>
           </div>
-          <button className="acceptin-button">Забронировать</button>
+          <button
+            className="acceptin-button"
+            onClick={bookSeats}
+          >
+            Забронировать
+          </button>
         </section>
       </main>
     </>

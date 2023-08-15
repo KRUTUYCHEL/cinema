@@ -1,11 +1,8 @@
 import React, {useEffect, useState} from "react";
 import classNames from "classnames";
+import { SelectedPlace } from '../../data';
 
-export interface Selected {
-  row: number;
-  column: number;
-  vip: boolean;
-}
+
 
 interface Cell {
   disabled: boolean;
@@ -17,15 +14,23 @@ interface Row {
 }
 
 export interface HallPlacesProps {
-  value: Selected[];
-  onUpdate: (value: Selected[], html: string) => void;
+  value: SelectedPlace[];
+  onUpdate: (value: SelectedPlace[]) => void;
+  onUpdateHtml: (html: string) => void;
   html: string;
 }
 
 
 
-const HallPlaces = ({ html, value, onUpdate }: HallPlacesProps) => {
+const HallPlaces = ({ html, value, onUpdate, onUpdateHtml }: HallPlacesProps) => {
   const [rows, setRows] = useState<Row[]>([]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      const html = document.getElementById('actual-hall-places')?.innerHTML || '';
+      onUpdateHtml(html);
+    }, 200);
+  }, [value])
 
   useEffect(() => {
     const hall = document.getElementById('hall-places');
@@ -58,13 +63,14 @@ const HallPlaces = ({ html, value, onUpdate }: HallPlacesProps) => {
         style={{ display: 'none' }}
         dangerouslySetInnerHTML={{ __html: html }}
       />
-      <div>
+      <div id="actual-hall-places">
         {rows.map((row, rowIndex) => (
-          <div className="conf-step__row">
+          <div key={rowIndex} className="conf-step__row">
             {row.cells.map((cell, cellIndex) => {
               const selected = value.some(p => p.row === rowIndex + 1 && p.column === cellIndex + 1);
               return (
                 <span
+                  key={cellIndex}
                   onClick={() => {
                     if (cell.disabled || cell.taken) return;
 
@@ -75,7 +81,7 @@ const HallPlaces = ({ html, value, onUpdate }: HallPlacesProps) => {
                       newValue.push({ row: rowIndex + 1, column: cellIndex + 1, vip: cell.vip });
                     }
 
-                    onUpdate(newValue, '');
+                    onUpdate(newValue);
                   }}
                   className={classNames('conf-step__chair', {
                     'conf-step__chair_disabled': cell.disabled,

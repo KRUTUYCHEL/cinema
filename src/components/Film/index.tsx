@@ -1,8 +1,10 @@
 import React from "react";
+import {isAfter} from "date-fns";
 
 export interface Seance {
   id: string;
   startTime: string;
+  seanceStart: string;
 }
 
 export interface Hall {
@@ -18,15 +20,15 @@ export interface FilmProps {
   description: string;
   origin: string;
   poster: string;
+  selectedDate: Date;
 
   data: Hall[];
 
   onSeanceClick: (seanceId: string) => void;
 }
 
-const Film = ({ id, name, duration , description , origin, poster, data, onSeanceClick}: FilmProps) => {
+const Film = ({ selectedDate, name, duration , description , origin, poster, data, onSeanceClick}: FilmProps) => {
   return (
-
     <section className="movie">
       <div className="movie__info">
         <div className="movie__poster">
@@ -45,20 +47,44 @@ const Film = ({ id, name, duration , description , origin, poster, data, onSeanc
         <div className="movie-seances__hall" key = {hall.id}>
           <h3 className="movie-seances__hall-title">{hall.name}</h3>
           <ul className="movie-seances__list">
-            {hall.seances.map( seance => (
-              <li
-                className="movie-seances__time-block"
-                key={seance.id}
-                onClick={(e) => {
-                  e.preventDefault();
-                  onSeanceClick(seance.id);
-                }}
-              >
-                <a className="movie-seances__time" href="#">
-                  {seance.startTime}
-                </a>
-              </li>
-            ))}
+            {hall.seances.map( seance => {
+              const currentDate = selectedDate;
+              let selectedYear = currentDate.getFullYear();
+              let selectedMonth = currentDate.getMonth();
+              let selectedDay = currentDate.getDate();
+              const seanceStartHours = Math.trunc(
+                Number(seance.seanceStart) / 60
+              );
+              const seanceStartMinutes =
+                Number(seance.seanceStart) % 60;
+              const seanceStartDate = new Date(
+                selectedYear,
+                selectedMonth,
+                selectedDay,
+                seanceStartHours,
+                seanceStartMinutes
+              );
+              const enabled = isAfter(seanceStartDate, new Date());
+              return (
+                <li
+                  className="movie-seances__time-block"
+                  key={seance.id}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    enabled && onSeanceClick(seance.id);
+                  }}
+                >
+                  <button
+                    className="movie-seances__time-button"
+                    disabled={!enabled}
+                  >
+                    <a className="movie-seances__time" href="#">
+                      {seance.startTime}
+                    </a>
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         </div>
       ))}

@@ -1,11 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 import addDays from 'date-fns/addDays'
 import Day from "./Day";
 import {isSameDay} from "date-fns";
 
-const NavDateSelector = () => {
+export interface NavDateSelectorProps {
+  value: Date;
+  onChange: (date: Date) => void;
+}
+
+const NavDateSelector = ({ value: selectedDate, onChange: setSelectedDate }: NavDateSelectorProps) => {
   const currentDate = new Date();
-  const [selectedDate, setSelectedDate] = useState(() => currentDate);
 
   const dates = []
 

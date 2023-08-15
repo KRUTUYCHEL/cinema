@@ -1,15 +1,13 @@
 import React from 'react';
-import s from './styles.module.scss';
 import PageRoutes from "../../routes";
-import {Link} from "react-router-dom";
 
-const App = ()  =>{
+const App = () => {
   return (
     <>
-      <header className={s.header}>
-        <Link to="/">
-          <h1 className={s.title}>Идём<span>в</span>кино</h1>
-        </Link>
+      <header className="page-header">
+        <a href="/" className="page-header__title_a">
+          <h1 className="page-header__title">Идём<span>в</span>кино</h1>
+        </a>
       </header>
       <PageRoutes/>
     </>

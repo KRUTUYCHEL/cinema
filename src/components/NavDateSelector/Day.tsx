@@ -18,7 +18,10 @@ const Day = ({ date, isChosen, onClick }: DayProps) => {
         'page-nav__day_weekend': isWeekend(date)
       })}
       href="#"
-      onClick={() => onClick(date)}
+      onClick={(e) => {
+        e.preventDefault();
+        onClick(date)
+      }}
     >
       <span className="page-nav__day-week">
         {format(date, 'EEEEEE')}
