@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/cinema/build/static/css/main.5e44df90.css",
-    "main.js": "/cinema/build/static/js/main.9ed28d56.js",
-    "static/js/787.20fe59fe.chunk.js": "/cinema/build/static/js/787.20fe59fe.chunk.js",
-    "static/media/background.jpg": "/cinema/build/static/media/background.8057f0e543a33be5a896.jpg",
-    "index.html": "/cinema/build/index.html",
-    "main.5e44df90.css.map": "/cinema/build/static/css/main.5e44df90.css.map",
-    "main.9ed28d56.js.map": "/cinema/build/static/js/main.9ed28d56.js.map",
-    "787.20fe59fe.chunk.js.map": "/cinema/build/static/js/787.20fe59fe.chunk.js.map"
+    "main.css": "https://krutuychel.github.io/cinema/build/static/css/main.63925a47.css",
+    "main.js": "https://krutuychel.github.io/cinema/build/static/js/main.b3201230.js",
+    "static/js/787.20fe59fe.chunk.js": "https://krutuychel.github.io/cinema/build/static/js/787.20fe59fe.chunk.js",
+    "static/media/background.jpg": "https://krutuychel.github.io/cinema/build/static/media/background.8057f0e543a33be5a896.jpg",
+    "index.html": "https://krutuychel.github.io/cinema/build/index.html",
+    "main.63925a47.css.map": "https://krutuychel.github.io/cinema/build/static/css/main.63925a47.css.map",
+    "main.b3201230.js.map": "https://krutuychel.github.io/cinema/build/static/js/main.b3201230.js.map",
+    "787.20fe59fe.chunk.js.map": "https://krutuychel.github.io/cinema/build/static/js/787.20fe59fe.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.5e44df90.css",
-    "static/js/main.9ed28d56.js"
+    "static/css/main.63925a47.css",
+    "static/js/main.b3201230.js"
   ]
 }
