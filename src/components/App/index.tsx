@@ -5,7 +5,7 @@ const App = () => {
   return (
     <>
       <header className="page-header">
-        <a href="/" className="page-header__title_a">
+        <a href="/cinema/build" className="page-header__title_a">
           <h1 className="page-header__title">Идём<span>в</span>кино</h1>
         </a>
       </header>
