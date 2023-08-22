@@ -1,46 +1,56 @@
-# Getting Started with Create React App
+# Создание «информационной системы для предварительного бронирования билетов».
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## **Задача**
 
-## Available Scripts
+Разработка сайта бронирования билетов онлайн
 
-In the project directory, you can run:
+## **Сущности**
 
-### `npm start`
+### Кинозал
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Помещение, в котором демонстрируются фильмы. Режим работы определяется расписанием на день. Зал — прямоугольный, состоит из N\*M различных зрительских мест.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### Зрительское место
 
-### `npm test`
+Место в кинозале. Зрительские места могут быть VIP и обычные.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Фильм
 
-### `npm run build`
+Информация о фильме заполняется администратором. Фильм связан с сеансом в кинозале.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Сеанс
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Сеанс — это временной промежуток, в котором в кинозале будет показываться фильм. На сеанс могут быть забронированы билеты.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Билет
 
-### `npm run eject`
+QR-код c уникальным кодом бронирования, в котором обязательно указаны место, ряд, сеанс. Билет действителен строго на свой сеанс. Для генерации QR-кода использован [QRCreator.js](https://github.com/slesareva-gala/QR-Code)
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## **Роль пользователя**
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Гость
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+неавторизованный посетитель сайта
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### Возможности гостя
 
-## Learn More
+- просмотр расписания
+- просмотр информации о фильмах
+- выбор места в кинозале
+- бронирование билета
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## **Стек технологий**
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+
+
+## **Реализация проекта**
+
+- Адаптирована исходная верстка под планшетные и мобильные устройства. Верстка корректно отображается на устройствах с шириной экрана 320px и более.
+- Разработана API для взаимодействия с Backend.
+    - Получение списков всех залов, кинофильмов и сеансов
+    - Получение актуальной схемы посадочных мест на выбранный сеанс
+    - Заказ билета
+-  Запрограммирована гостевая часть сайта
+
+## **[Демо](https://krutuychel.github.io/cinema/build/)**
+
