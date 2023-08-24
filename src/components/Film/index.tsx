@@ -32,7 +32,7 @@ const Film = ({ selectedDate, name, duration , description , origin, poster, dat
     <section className="movie">
       <div className="movie__info">
         <div className="movie__poster">
-          <img className="movie__poster-image" alt="Звёздные войны постер" src={poster} />
+          <img className="movie__poster-image" alt={name} src={poster} />
         </div>
         <div className="movie__description">
           <h2 className="movie__title">{name}</h2>
